@@ -1,0 +1,37 @@
+version: '3.7'
+services:
+    database:
+        image: mongo:latest
+        ports:
+            - 27017:27017
+        container_name: database
+    extractionservice:
+        build: './mongoDb'
+        container_name: extractionservice
+    catalogueservice:
+        build: './catalogue'
+        ports:
+            - '8080:8080'
+        links:
+            - database
+            - searchlog
+        container_name: catalogueservice
+    searchlog:
+        build: './searchLog'
+        ports:
+            - '8081:8081'
+        container_name: searchlog
+    usernotes:
+        build: './userNotes'
+        ports:
+            - '8082:8082'
+        container_name: usernotes
+    service:
+        build: './services'
+        ports: 
+            - '80:80'
+        links:
+            - searchlog
+            - usernotes
+            - catalogueservice
+        container_name: service
