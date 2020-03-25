@@ -72,13 +72,14 @@ for keys in books_dict.keys():
 
     for doc in data:
         books_id = books.insert_one(doc)
+        pass
     end_time =  datetime.now().strftime("%H:%M:%S")
     details = {'file_name':keys,'start_time':start_time,'end_time':end_time}
     file_details.insert_one(details)
     
     print("Porcessing and inserting data for file :"+keys+" completed")
     print("Sleeping for 5 minutes")
-    #time.sleep(300)
+    time.sleep(.3)
     
 
 print("Data inserted")

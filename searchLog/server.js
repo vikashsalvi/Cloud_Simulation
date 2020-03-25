@@ -60,23 +60,27 @@ app.get("/searchLog/:searchKey", (request,response) => {
         }
         data_csv = csv_rows
       }
+      
     });
   
     response.send("OK")
 });
 
 app.get("/getSearchLogData", (request,response) => {
+  console.log(data_csv)
   /*path = "log.csv"
   const csv = require('csv-parser');
   const fs = require('fs');
-  data = []
+  var data = []
   if(fs.existsSync(path)){
     fs.createReadStream(path).pipe(csv())
     .on('data', (row) => {
       data.push(row)
       console.log(row)
+      console.log('---')
     })
     .on('end', () => {
+      console.log(data)
       console.log('CSV file successfully processed');
     });
     response.send(data)
