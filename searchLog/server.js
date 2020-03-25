@@ -12,58 +12,61 @@ log.configure({
 var logger = log.getLogger();
 logger.level = 'info';
 var data_csv
-
 app.get("/searchLog/:searchKey", (request,response) => {
-    var input = request.params.searchKey 
-    var date = new Date()
-    path = "log.csv"
-    var data = []
-    const csv = require('csv-parser');
-    const fs = require('fs');
-    var freq_count = 0
-    var csv_rows = []
-    console.log("call received")
-    if(!fs.existsSync(path)){
-      fs.writeFileSync(path,"Keyword,Date and time,frequency count \n")
-      fs.appendFileSync(path,input+","+date+",0\n")
+  
+  
+  var input = request.params.searchKey 
+  var date = new Date()
+  path = "log.csv"
+  const csv = require('csv-parser');
+  const fs = require('fs');
+  const results = [];
+  var freq_count = 0
+  var csv_rows = []
+  if(!fs.existsSync(path)){
+    fs.writeFileSync(path,"Keyword,date_time,frequency_count\n")
+    fs.appendFileSync(path,input+","+date+",0\n")
+  }
+  fs.createReadStream(path)
+  .pipe(csv())
+  .on('data', (row) => {
+    csv_rows.push(row)
+    if(row.Keyword == input){
+      freq_count = freq_count +1
     }
-    fs.createReadStream(path)
-    .pipe(csv())
-    .on('data', (row) => {
-      if(row.Keyword == input){
-        freq_count = freq_count +1
-      }
-    })
-    .on('end', () => {  
-      if(fs.existsSync(path)){
-        fs.readFileSync(path)
-        fs.writeFileSync(path,"Keyword,date_time,frequency_count\n")
-        var flag = 0
-        for(var i=0;i<csv_rows.length;i++){
-            if(csv_rows[i].Keyword == input){
-              var co = parseInt((csv_rows[i].frequency_count+"").toString().trim())
-              co++
-              csv_rows[i].date_time = date
-              csv_rows[i].frequency_count = co
-              flag=0
+  })
+  .on('end', () => {  
+    if(fs.existsSync(path)){
+      fs.readFileSync(path)
+      fs.writeFileSync(path,"Keyword,date_time,frequency_count\n")
+      var flag = 0
+      for(var i=0;i<csv_rows.length;i++){
+          if(csv_rows[i].Keyword == input){
+            
+            var co = parseInt((csv_rows[i].frequency_count+"").toString().trim())
+            co++
+            csv_rows[i].date_time = date
+            csv_rows[i].frequency_count = co
+
+            flag=0
             break;
           }
           else{
             flag=1
           }
-        }
-        for(var i=0;i<csv_rows.length;i++){
-          fs.appendFileSync(path,csv_rows[i].Keyword+","+csv_rows[i].date_time +","+csv_rows[i].frequency_count+"\n")
-        }
-        if(flag==1){
-          fs.appendFileSync(path,input+","+date +","+1+"\n")
-        }
-        data_csv = csv_rows
       }
-      
-    });
+      for(var i=0;i<csv_rows.length;i++){
+        fs.appendFileSync(path,csv_rows[i].Keyword+","+csv_rows[i].date_time +","+csv_rows[i].frequency_count+"\n")
+      }
+      if(flag==1){
+        fs.appendFileSync(path,input+","+date +","+1+"\n")
+      }
+      data_csv = csv_rows
+      console.log(data_csv)
+    }
+  });
   
-    response.send("OK")
+  response.send("OK")
 });
 
 app.get("/getSearchLogData", (request,response) => {
@@ -75,9 +78,7 @@ app.get("/getSearchLogData", (request,response) => {
   if(fs.existsSync(path)){
     fs.createReadStream(path).pipe(csv())
     .on('data', (row) => {
-      data.push(row)
       console.log(row)
-      console.log('---')
     })
     .on('end', () => {
       console.log(data)

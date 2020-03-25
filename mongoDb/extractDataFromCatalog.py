@@ -72,7 +72,6 @@ for keys in books_dict.keys():
 
     for doc in data:
         books_id = books.insert_one(doc)
-        pass
     end_time =  datetime.now().strftime("%H:%M:%S")
     details = {'file_name':keys,'start_time':start_time,'end_time':end_time}
     file_details.insert_one(details)
