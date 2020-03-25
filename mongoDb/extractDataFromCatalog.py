@@ -2,12 +2,16 @@ import re
 import pymongo
 from pymongo import TEXT
 import pprint
+from datetime import datetime
+import time
+
 
 file_name = 1996
 list_of_books = []
-client = pymongo.MongoClient('mongodb://database:27017/')
-
+client = pymongo.MongoClient('mongodb://localhost:27017/')
+books_dict = {}
 while file_name<=2020:
+
     file = open("files/"+str(file_name)+".txt",'r',encoding="utf-8")
     lines = file.readlines()
     lineSplit = 0
@@ -25,38 +29,60 @@ while file_name<=2020:
                 list_of_books[len(list_of_books)-1] = combine_two_line
         if "TITLE and AUTHOR" in line:
             f = 1
+    books_dict[str(file_name)+'.txt'] = list_of_books
+    list_of_books = []
     file_name = file_name + 1
-count = 0
-for book in list_of_books:
-    if "[Languages:" in book or "[Language:" in book:
-        del list_of_books[count]
-    count = count + 1
+    
 
-count = 0
-for book in list_of_books:
-    list_of_books[count] = re.sub(r'\[.*\]','',book)
-    list_of_books[count] = re.sub(r'\n','',book)
-    list_of_books[count] = re.sub(r'\s\s\s*\d+','',book)
-    count = count + 1
-data = []
-for line in list_of_books:
-    inner_document = {}
-    split = line.strip().split('by')
-    inner_document['book_title'] = re.sub('[^A-Za-z0-9\s]+','',split[0]).strip()
-    if(len(split) == 1):
+for keys in books_dict.keys():
+    count = 0
+    for book in books_dict[keys]:
+        if "[Languages:" in book or "[Language:" in book:
+            del books_dict[keys][count]
+        count = count + 1
 
-        inner_document['author_name'] = "Unknown"
-    else:
-        inner_document['author_name'] = re.sub('[^A-Za-z0-9\s]+','',split[1]).strip()
-    data.append(inner_document)  
+
+for keys in books_dict.keys():
+    count = 0
+    for book in books_dict[keys]:
+        books_dict[keys][count] = re.sub(r'\[.*\]','',book)
+        books_dict[keys][count] = re.sub(r'\n','',book)
+        books_dict[keys][count] = re.sub(r'\s\s\s*\d+','',book)
+        count = count + 1
 
 db = client.CSCI5409
 books = db.book_details
-for json in data:
-    books_id = books.insert_one(json)
+file_details = db.file_details
+
+print("Inserting data into mongo db")
+for keys in books_dict.keys():
+    start_time = datetime.now().strftime("%H:%M:%S")
+    data = []
+    for line in books_dict[keys]:
+        inner_document = {}
+        split = line.strip().split('by')
+        inner_document['book_title'] = re.sub('[^A-Za-z0-9\s]+','',split[0]).strip()
+        if(len(split) == 1):
+
+            inner_document['author_name'] = "Unknown"
+        else:
+            inner_document['author_name'] = re.sub('[^A-Za-z0-9\s]+','',split[1]).strip()
+        data.append(inner_document)  
+
+
+    for doc in data:
+        books_id = books.insert_one(doc)
+    end_time =  datetime.now().strftime("%H:%M:%S")
+    details = {'file_name':keys,'start_time':start_time,'end_time':end_time}
+    file_details.insert_one(details)
     
+    print("Porcessing and inserting data for file :"+file+" completed")
+    print("Sleeping for 5 minutes")
+    #time.sleep(300)
+    
+
 print("Data inserted")
-print("Creating index")
+print("Creating index in mongoDb to support text search")
 client.CSCI5409.book_details.create_index([('book_title', TEXT),('author_name', TEXT)], default_language='english')
 print("Index created")
 print("Testing a search")
