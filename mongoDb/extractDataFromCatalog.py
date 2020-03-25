@@ -76,7 +76,7 @@ for keys in books_dict.keys():
     details = {'file_name':keys,'start_time':start_time,'end_time':end_time}
     file_details.insert_one(details)
     
-    print("Porcessing and inserting data for file :"+file+" completed")
+    print("Porcessing and inserting data for file :"+keys+" completed")
     print("Sleeping for 5 minutes")
     #time.sleep(300)
     
