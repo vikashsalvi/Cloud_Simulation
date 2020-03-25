@@ -6,10 +6,20 @@ app.get("/notesSearch/:searchKeyword", (request,response) => {
     data = readDataFromFile()
     var existingArray
     if(data.hasOwnProperty(request.params.searchKeyword)){
-      response.send(""+data[request.params.searchKeyword])
+      response.send(data[request.params.searchKeyword])
     }else{
       response.send('No notes found for the keyword: '+request.params.searchKeyword)
     }
+})
+
+app.get("/fetchSampleNotes/:searchKeyword", (request,response) => {
+  data = readDataFromFile()
+  var existingArray
+  if(data.hasOwnProperty(request.params.searchKeyword)){
+    response.send(""+data[request.params.searchKeyword])
+  }else{
+    response.send('No notes found for the keyword: '+request.params.searchKeyword)
+  }
 })
   
 app.get("/submitNotesForTheKeyword/:searchKeyword/:notes", (request,response) => {
