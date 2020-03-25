@@ -11,5 +11,5 @@ RUN npm install
 # RUN npm ci --only=production
 
 COPY . .
-EXPOSE 8080
+EXPOSE 8082
 CMD [ "node", "server.js" ]
