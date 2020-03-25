@@ -8,7 +8,7 @@ import time
 
 file_name = 1996
 list_of_books = []
-client = pymongo.MongoClient('mongodb://localhost:27017/')
+client = pymongo.MongoClient('mongodb://database:27017/')
 books_dict = {}
 while file_name<=2020:
 
