@@ -1,13 +1,17 @@
 var express = require('express');
 app = express();
+var cors = require('cors')
+app.use(cors())
 const fs = require('fs')
 
 app.get("/notesSearch/:searchKeyword", (request,response) => {
     data = readDataFromFile()
     var existingArray
     if(data.hasOwnProperty(request.params.searchKeyword)){
+      response.header("Access-Control-Allow-Origin", "*");
       response.send(data[request.params.searchKeyword])
     }else{
+      response.header("Access-Control-Allow-Origin", "*");
       response.send('No notes found for the keyword: '+request.params.searchKeyword)
     }
 })
@@ -16,8 +20,10 @@ app.get("/fetchSampleNotes/:searchKeyword", (request,response) => {
   data = readDataFromFile()
   var existingArray
   if(data.hasOwnProperty(request.params.searchKeyword)){
+    response.header("Access-Control-Allow-Origin", "*");
     response.send(""+data[request.params.searchKeyword])
   }else{
+    response.header("Access-Control-Allow-Origin", "*");
     response.send('No notes found for the keyword: '+request.params.searchKeyword)
   }
 })
@@ -36,6 +42,7 @@ app.get("/submitNotesForTheKeyword/:searchKeyword/:notes", (request,response) =>
       data[request.params.searchKeyword] = [request.params.notes]
     }
     writeDataToFile(data)
+    response.header("Access-Control-Allow-Origin", "*");
     response.send(data[request.params.searchKeyword]);
   })
   function writeDataToFile(data){

@@ -5,8 +5,11 @@ var BodyParser = require('body-parser');
 var app = express();
 var mongoClient = mongo.MongoClient;
 var url = "mongodb://database:27017/";
+var cors = require('cors')
+app.use(cors())
 app.use(BodyParser.json());
 app.use(BodyParser.urlencoded({ extended: true }));
+
 var database, collection;
 
 var catalogue = []
@@ -26,11 +29,13 @@ app.get("/search/:searchKeyword", (request, response) => {
           content['author_name'] = obj['author_name']
           catalogue.push(content); 
         }  
+        response.header("Access-Control-Allow-Origin", "*");
         response.send(result);
     });
 });
 
 app.get("/getcCtalogue", (request,response) => {
+  response.header("Access-Control-Allow-Origin", "*");
   response.send(catalogue)
 });
 

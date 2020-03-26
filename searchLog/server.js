@@ -2,6 +2,8 @@ var express = require('express');
 var BodyParser = require('body-parser');
 
 var app = express();
+var cors = require('cors')
+app.use(cors())
 app.use(BodyParser.json());
 app.use(BodyParser.urlencoded({ extended: true }));
 var log = require('log4js');
@@ -65,7 +67,7 @@ app.get("/searchLog/:searchKey", (request,response) => {
       console.log(data_csv)
     }
   });
-  
+  response.header("Access-Control-Allow-Origin", "*");
   response.send("OK")
 });
 
@@ -88,6 +90,7 @@ app.get("/getSearchLogData", (request,response) => {
   }else{
     response.send("No search log created yet")
   }*/
+  response.header("Access-Control-Allow-Origin", "*");
   response.send(data_csv)
 });
 app.listen(8081, function () {
