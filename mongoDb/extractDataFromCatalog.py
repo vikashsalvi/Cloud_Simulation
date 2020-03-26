@@ -78,7 +78,7 @@ for keys in books_dict.keys():
     
     print("Porcessing and inserting data for file :"+keys+" completed")
     print("Sleeping for 5 minutes")
-    time.sleep(300)
+    time.sleep(.3)
     
 
 print("Data inserted")
