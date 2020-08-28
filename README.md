@@ -1,4 +1,4 @@
-# CSCI_5409_A3
+# CSCI_5409_SIMULATION
 Simple distributed micorservices on multi-container docker  with MongoDB
 
 Clone the project and run:
